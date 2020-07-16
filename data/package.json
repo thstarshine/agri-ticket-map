@@ -1,0 +1,15 @@
+{
+  "name": "agri-data",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "th.starshine@gmail.com",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "bluebird": "^3.7.2",
+    "cheerio": "^1.0.0-rc.3",
+    "dotenv": "^8.2.0",
+    "prettier": "^2.0.5"
+  }
+}
