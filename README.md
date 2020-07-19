@@ -2,6 +2,6 @@
 
 https://thstarshine.github.io/agri-ticket-map
 
-Based on [Leaflet.js](https://leafletjs.com/) and [Mapbox](https://www.mapbox.com/) tiles.
+Built on [Leaflet.js](https://leafletjs.com/) and [Mapbox](https://www.mapbox.com/) tiles.
 
 Official store data source: https://ezgo.coa.gov.tw/zh-TW/Front/ETicket/UseStore

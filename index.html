@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
+    <link rel="prefetch" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
       integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
       crossorigin=""
     />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
     <script
       src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
       integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
@@ -16,26 +19,61 @@
       html, body {
         height: 100%;
       }
-      h1 {
+      .top-title {
         position: absolute;
-        left: 100px;
         z-index: 1000;
+        left: 100px;
+        -webkit-text-stroke: 0.5px #ff9999;
+      }
+      .top-title a {
+        -webkit-text-stroke: 0.5px #ff9999;
+        color: inherit;
+        font-weight: inherit;
+        text-decoration: none;
+      }
+      h5 {
+        font-size: 0.85rem;
+        display: inline;
+      }
+      h6 {
+        font-size: 0.7rem;
+        display: inline;
       }
       #map {
         height: 100%;
         width: 100%;
       }
+      .leaflet-popup a {
+        vertical-align: super;
+      }
       .full-height {
         height: 100%;
       }
+      .material-icons.my-blue {
+        color: #4148d1;
+      }
+      .material-icons.my-orange {
+        color: #FB8C00;
+      }
+      .material-icons.my-red {
+        color: #cf4c59;
+      }
     </style>
     <script src="./data/stores.js"></script>
-    <meta name="description" content="2020台灣農遊券合作業者地圖。持「農遊券」至全臺休閒農業獎勵旅遊合作業者（詳見合作業者清單）即可消費抵用，抵用項目包含合作業者營業場域內之門票、各項農業體驗（含農事、生態、導覽、田園餐飲、個別營業場域內套裝遊程）活動、農漁特產品或伴手等。"></meta>
-    <title>2020 台灣農遊券 合作業者地圖</title>
+    <meta name="description" content="2020台灣農遊券合作業者地圖。持「農遊券」至全臺休閒農業獎勵旅遊合作業者即可消費抵用，抵用項目包含合作業者營業場域內之門票、各項農業體驗（含農事、生態、導覽、田園餐飲、個別營業場域內套裝遊程）活動、農漁特產品或伴手等。"></meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="og:title" property="og:title" content="2020 台灣農遊券合作業者地圖">
+    <meta name="og:description" property="og:description" content="2020台灣農遊券合作業者地圖。持「農遊券」至全臺休閒農業獎勵旅遊合作業者即可消費抵用，抵用項目包含合作業者營業場域內之門票、各項農業體驗（含農事、生態、導覽、田園餐飲、個別營業場域內套裝遊程）活動、農漁特產品或伴手等。">
+    <meta name="og:image" property="og:image" content="https://eticketblob.blob.core.windows.net/wwwroot/Ezgo/Uploads/projects/2020eticket/banner/banner-eticket.png">
+    <title>2020 台灣農遊券合作業者地圖</title>
   </head>
   <body>
     <div class="full-height">
-        <h1>2020 台灣農遊券 合作業者地圖</h1>
+        <div class="top-title">
+          <h1>2020 <a href="https://ezgo.coa.gov.tw/zh-TW/Front/ETicket/UseStore" target="_blank">台灣農遊券</a>合作業者地圖</h1>
+          <h3>(此地圖僅供參考，資料仍以官方公佈為準)</h3>  
+        </div>
         <div id="map" class="map"></div>
     </div>
     <script type="text/javascript">
@@ -44,18 +82,37 @@
         "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoidGhzdGFyc2hpbmUiLCJhIjoiY2tjb3RnbXIxMDFheDJ5bWRjY3B2b3k1ZCJ9.gAzRgrpzU_hw5di9EzAznA",
         {
           attribution:
-            'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-          maxZoom: 18,
+            '<a href="https://github.com/thstarshine/agri-ticket-map">thstarshine</a> | Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+          minZoom: 8,
+          maxZoom: 16,
           id: "mapbox/streets-v11",
           tileSize: 512,
           zoomOffset: -1,
         }
       ).addTo(map);
       stores.forEach((store) => {
-        const { StoreName, ETicket, Location } = store;
-        const marker = L.marker([Location.lat, Location.lng]).addTo(map);
-        marker.bindPopup(`<b>${StoreName}</b><br>${ETicket}`);
+        try {
+          const { StoreName, Tel, Address, ETicket, Location } = store;
+          const marker = L.marker([Location.lat, Location.lng]).addTo(map);
+          const title = `<i class="material-icons md-18 my-red">storefront</i> <a href="https://www.google.com/search?q=${StoreName}" target="_blank"><h5>${StoreName}</h5></a>`;
+          const direction = `<i class="material-icons md-18 my-orange">room</i> <a href="https://www.google.com/maps/search/?api=1&query=${Address}" target="_blank"><h6>${Address}</h6></a>`;
+          const phone = `<i class="material-icons md-18 my-blue">local_phone</i> <a href="tel:${Tel}"><h6>${Tel}</h6></a>`;
+          const desc = `${ETicket}`;
+          marker.bindPopup(`${title}<br>${direction}<br>${phone}<br><br>${ETicket}`);
+        } catch (e) {
+          console.log(e);
+        }
       });
+      // request for user's location
+      function onLocationFound(e) {
+        map.flyTo([e.latlng.lat, e.latlng.lng], 12);
+      }
+      function onLocationError(e) {
+        console.log(e);
+      }
+      map.on('locationfound', onLocationFound);
+      map.on('locationerror', onLocationError);
+      map.locate({ setView: true, maxZoom: 18 });
     </script>
   </body>
 </html>
